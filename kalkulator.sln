@@ -1,31 +1,112 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.13.35913.81 d17.13
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kalkulator", "kalkulator.vcxproj", "{CB01CCB0-D91F-4B64-80A0-EB991D10A47E}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
-		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CB01CCB0-D91F-4B64-80A0-EB991D10A47E}.Debug|x64.ActiveCfg = Debug|x64
-		{CB01CCB0-D91F-4B64-80A0-EB991D10A47E}.Debug|x64.Build.0 = Debug|x64
-		{CB01CCB0-D91F-4B64-80A0-EB991D10A47E}.Debug|x86.ActiveCfg = Debug|Win32
-		{CB01CCB0-D91F-4B64-80A0-EB991D10A47E}.Debug|x86.Build.0 = Debug|Win32
-		{CB01CCB0-D91F-4B64-80A0-EB991D10A47E}.Release|x64.ActiveCfg = Release|x64
-		{CB01CCB0-D91F-4B64-80A0-EB991D10A47E}.Release|x64.Build.0 = Release|x64
-		{CB01CCB0-D91F-4B64-80A0-EB991D10A47E}.Release|x86.ActiveCfg = Release|Win32
-		{CB01CCB0-D91F-4B64-80A0-EB991D10A47E}.Release|x86.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {B48EE96E-A0AD-40E7-B4D8-C0527C4057A6}
-	EndGlobalSection
-EndGlobal
+#include <iostream>
+#include <cmath>
+#include <string>
+using namespace std;
+
+double pamiec = 0; // Akumulator
+bool pamiec_uzyta = false;
+
+// Funkcje matematyczne
+double add(double a, double b) { return a + b; }
+double sub(double a, double b) { return a - b; }
+double tim(double a, double b) { return a * b; }
+double div(double a, double b) {
+    if (b != 0) return a / b;
+    cout << "Nie mozna dzielic przez 0!\n";
+    return NAN;
+}
+double modulo(double a, double b) {
+    if (b != 0) return fmod(a, b);
+    cout << "Nie mozna dzielic przez 0!\n";
+    return NAN;
+}
+
+// Konwersja systemów liczbowych
+void konwersjaSystemu(int liczba, int baza) {
+    if (baza < 2 || baza > 10) {
+        cout << "Obslugiwane bazy: 2-10.\n";
+        return;
+    }
+    string wynik = "";
+    while (liczba > 0) {
+        wynik = to_string(liczba % baza) + wynik;
+        liczba /= baza;
+    }
+    cout << "Wynik konwersji: " << wynik << endl;
+}
+
+// Obsługa akumulatora
+void zapiszDoPamieci(double wartosc) {
+    pamiec = wartosc;
+    pamiec_uzyta = true;
+}
+
+double odczytajPamiec() {
+    if (pamiec_uzyta) return pamiec;
+    cout << "Brak zapisanej wartosci.\n";
+    return 0;
+}
+
+void resetujKalkulator() {
+    pamiec = 0;
+    pamiec_uzyta = false;
+    cout << "Reset kalkulatora.\n";
+}
+
+// Obsługa operacji matematycznych
+double oblicz(char operacja, double liczba1, double liczba2) {
+    switch (operacja) {
+    case '+': return add(liczba1, liczba2);
+    case '-': return sub(liczba1, liczba2);
+    case '*': return tim(liczba1, liczba2);
+    case '/': return div(liczba1, liczba2);
+    case '%': return modulo(liczba1, liczba2);
+    default: cout << "Nieznany operator!\n"; return NAN;
+    }
+}
+
+void uruchomKalkulator() {
+    char operacja;
+    while (true) {
+        cout << "\nPodaj operację (+,-,*,/,%,m-zapis,r-odczyt,c-restart,b-konwersja,q-wyjscie): ";
+        cin >> operacja;
+        if (operacja == 'q') break;
+
+        if (operacja == 'm') {
+            double wartosc;
+            cout << "Podaj wartosc do zapisania: ";
+            cin >> wartosc;
+            zapiszDoPamieci(wartosc);
+            continue;
+        }
+        if (operacja == 'r') {
+            cout << "Wartosc w pamieci: " << odczytajPamiec() << endl;
+            continue;
+        }
+        if (operacja == 'c') {
+            resetujKalkulator();
+            continue;
+        }
+        if (operacja == 'b') {
+            int liczba, baza;
+            cout << "Podaj liczbę całkowita do konwersji: ";
+            cin >> liczba;
+            cout << "Podaj baze (<=10): ";
+            cin >> baza;
+            konwersjaSystemu(liczba, baza);
+            continue;
+        }
+
+        double liczba1, liczba2;
+        cout << "Podaj pierwsza liczbe: ";
+        cin >> liczba1;
+        cout << "Podaj druga liczbe: ";
+        cin >> liczba2;
+        cout << "Wynik: " << oblicz(operacja, liczba1, liczba2) << endl;
+    }
+}
+
+int main() {
+    uruchomKalkulator();
+    return 0;
+}
