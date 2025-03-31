@@ -1,0 +1,95 @@
+#include <iostream>
+#include <cmath>
+#include <string>
+
+using namespace std;
+
+class Kalkulator {
+private:
+    double pamiec;
+    bool pamiec_uzyta;
+
+public:
+    Kalkulator() : pamiec(0), pamiec_uzyta(false) {}
+
+    double add(double a, double b) { return a + b; }
+    double sub(double a, double b) { return a - b; }
+    double tim(double a, double b) { return a * b; }
+    double div(double a, double b) {
+        if (b != 0) return a / b;
+        cout << "Nie mozna dzielic przez 0!\n";
+        return NAN;
+    }
+    double modulo(double a, double b) {
+        if (b != 0) return fmod(a, b);
+        cout << "Nie mozna dzielic przez 0!\n";
+        return NAN;
+    }
+
+    void zapiszDoPamieci(double wartosc) {
+        pamiec = wartosc;
+        pamiec_uzyta = true;
+    }
+
+    double odczytajPamiec() {
+        if (pamiec_uzyta) return pamiec;
+        cout << "Brak zapisanej wartosci.\n";
+        return 0;
+    }
+
+    void resetujKalkulator() {
+        pamiec = 0;
+        pamiec_uzyta = false;
+        cout << "Reset kalkulatora.\n";
+    }
+
+    double oblicz(char operacja, double liczba1, double liczba2) {
+        switch (operacja) {
+        case '+': return add(liczba1, liczba2);
+        case '-': return sub(liczba1, liczba2);
+        case '*': return tim(liczba1, liczba2);
+        case '/': return div(liczba1, liczba2);
+        case '%': return modulo(liczba1, liczba2);
+        default: cout << "Nieznany operator!\n"; return NAN;
+        }
+    }
+
+    void uruchomKalkulator() {
+        char operacja;
+        while (true) {
+            cout << "\nPodaj operację (+,-,*,/,%,m-zapis,r-odczyt,c-restart,q-wyjscie): ";
+            cin >> operacja;
+            if (operacja == 'q') break;
+
+            if (operacja == 'm') {
+                double wartosc;
+                cout << "Podaj wartosc do zapisania: ";
+                cin >> wartosc;
+                zapiszDoPamieci(wartosc);
+                continue;
+            }
+            if (operacja == 'r') {
+                cout << "Wartosc w pamieci: " << odczytajPamiec() << endl;
+                continue;
+            }
+            if (operacja == 'c') {
+                resetujKalkulator();
+                continue;
+            }
+
+            double liczba1, liczba2;
+            cout << "Podaj pierwsza liczbe: ";
+            cin >> liczba1;
+            cout << "Podaj druga liczbe: ";
+            cin >> liczba2;
+            cout << "Wynik: " << oblicz(operacja, liczba1, liczba2) << endl;
+        }
+    }
+};
+
+int main() {
+    Kalkulator k;
+    k.uruchomKalkulator();
+    return 0;
+}
+
